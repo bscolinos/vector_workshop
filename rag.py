@@ -9,8 +9,11 @@ import singlestoredb
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 from langfuse.decorators import observe
+from langfuse import Langfuse
 
 load_dotenv()
+
+langfuse = Langfuse()
 
 # Define your connection parameters
 config = {
@@ -61,6 +64,18 @@ async def vector_search(query, limit=15):
     cursor.execute(query_statement, (query_embedding_vec, limit))
     results = cursor.fetchall()
     return results
+
+langfuse = Langfuse()
+
+@app.post("/feedback")
+async def submit_feedback(traceId: str, score: float, comment: str = None):
+    langfuse.score(
+        trace_id=traceId,
+        name="user_feedback",
+        value=score,
+        comment=comment
+    )
+    return {"message": "Feedback submitted successfully"}
 
 @observe()
 async def rag(query, limit=5, temp=0.1):
