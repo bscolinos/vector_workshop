@@ -6,6 +6,7 @@ import json
 import asyncio
 import singlestoredb
 from dotenv import load_dotenv
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
@@ -24,8 +25,16 @@ cursor = db_connection.cursor()
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
+
 # Set up OpenAI client and models
-OPENAI_API_KEY = os.environ['OPENAI_API_KEY'] = os.getenv('OPENAI_API_KEY')
+OPENAI_API_KEY = os.environ['OPENAI_API_KEY'] = os.getenv('open_ai_key')
 client = AsyncOpenAI()
 EMBEDDING_MODEL = 'text-embedding-ada-002'
 GPT_MODEL = 'gpt-3.5-turbo'
@@ -40,7 +49,7 @@ async def vector_search(query, limit=15):
     query_statement = '''
         SELECT content, v <*> %s :> vector(1536) AS similarity
         FROM embeddings
-        ORDER BY similarity DESC
+        ORDER BY similarity use index () DESC
         LIMIT %s;
     '''
     cursor.execute(query_statement, (query_embedding_vec, limit))
