@@ -1,12 +1,14 @@
 from fastapi import FastAPI, Query
 from pydantic import BaseModel
-from openai import AsyncOpenAI
+# from openai import AsyncOpenAI
+from langfuse.openai import AsyncOpenAI
 import os
 import json
 import asyncio
 import singlestoredb
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
+from langfuse.decorators import observe
 
 load_dotenv()
 
@@ -18,6 +20,10 @@ config = {
     'host': os.getenv('SINGLESTORE_HOST'),
     'database': 'vector_workshop'
 }
+
+os.environ["LANGFUSE_SECRET_KEY"] = "sk-lf-f1b48c81-f298-490b-b42c-50ec7943bfba"
+os.environ["LANGFUSE_PUBLIC_KEY"] = "pk-lf-2f5b7e04-745b-4d06-ae9a-3b5cc11f9fb7"
+os.environ["LANGFUSE_HOST"] = "https://us.cloud.langfuse.com"
 
 # Establish the database connection
 db_connection = singlestoredb.connect(**config)
@@ -56,6 +62,7 @@ async def vector_search(query, limit=15):
     results = cursor.fetchall()
     return results
 
+@observe()
 async def rag(query, limit=5, temp=0.1):
     results = await vector_search(query, limit)
     prompt = f'''Excerpt from the conversation history:
@@ -83,6 +90,7 @@ class QueryInput(BaseModel):
     temperature: float = Query(0.1, ge=0, le=1)
 
 @app.post("/rag")
+@observe() # observe with langfuse
 async def perform_rag(query_input: QueryInput):
     result = await rag(query_input.query, query_input.limit, query_input.temperature)
     return {"response": result}
