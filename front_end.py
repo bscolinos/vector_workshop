@@ -1,6 +1,7 @@
 import gradio as gr
 import requests
 import uuid
+import os
 
 os.environ["LANGFUSE_SECRET_KEY"] = "sk-lf-f1b48c81-f298-490b-b42c-50ec7943bfba"
 os.environ["LANGFUSE_PUBLIC_KEY"] = "pk-lf-2f5b7e04-745b-4d06-ae9a-3b5cc11f9fb7"
