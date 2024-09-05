@@ -16,9 +16,9 @@ Welcome to the Vector Workshop repository! This workshop is designed to help you
 - Basic knowledge of SingleStore, Python, and SQL.
 - Access to SingleStore.
 - Text data you want to use in a RAG application.
-- Pre-built LOAD DATA NOTEBOOK
-- Pre-built QUERY NOTEBOOK
-- Pre-built RAG NOTEBOOK
+- Pre-built LOAD DATA NOTEBOOK - in the notebooks folder
+- Pre-built QUERY NOTEBOOK - in the notebooks folder
+- Pre-built RAG NOTEBOOK - in the notebooks folder
 
 
 ## Workshop Structure
